@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-YOUR HEADER COMMENT HERE
+MiniProject 1: GeneFinder
 
-@author: YOUR NAME HERE
+@author: Kerry McConnaughay
 
 """
 
@@ -30,12 +30,26 @@ def get_complement(nucleotide):
     >>> get_complement('C')
     'G'
     """
-    # TODO: implement this
-    pass
+    if nucleotide == 'A':
+        return 'T'
+    elif nucleotide == 'T':
+        return 'A'
+    elif nucleotide == 'C':
+        return 'G'
+    elif nucleotide == 'G':
+        return "C"
+    else:
+        print('This is not possible', nucleotide)
+
+
+get_complement('A')
+get_complement('C')
+# get_complement('H')
 
 
 def get_reverse_complement(dna):
-    """ Computes the reverse complementary sequence of DNA for the specfied DNA
+
+    """ Computes the reverse complementary sequence of DNA for the specified DNA
         sequence
 
         dna: a DNA sequence represented as a string
@@ -45,8 +59,26 @@ def get_reverse_complement(dna):
     >>> get_reverse_complement("CCGCGTTCA")
     'TGAACGCGG'
     """
-    # TODO: implement this
-    pass
+
+    complementary_dna = ''
+    for nucleotide in dna:
+        different_nucleotide = get_complement(nucleotide)
+        # print(different_nucleotide)
+        complementary_dna = complementary_dna + different_nucleotide
+    # print(complementary_dna)
+
+    new_dna = ''
+    index = len(complementary_dna) - 1
+    while index >= 0:
+        reverse = complementary_dna[index]
+        index = index - 1
+        new_dna = new_dna + reverse
+        # print(new_dna)
+    return new_dna
+
+
+get_reverse_complement('ATGCCCGCTTT')
+get_reverse_complement("CCGCGTTCA")
 
 
 def rest_of_ORF(dna):
@@ -62,8 +94,25 @@ def rest_of_ORF(dna):
     >>> rest_of_ORF("ATGAGATAGG")
     'ATGAGA'
     """
-    # TODO: implement this
-    pass
+
+    # print (dna.startswith('ATG'))
+    index = 3  # where the index will start looking at 3 for frame stop codons
+    while index < len(dna):
+        if dna[index] == 'T':
+            if dna[index + 1] == 'G':
+                if dna[index + 2] == 'A':
+                    # print(dna[:index])
+                    return dna[:index]
+            if dna[index + 1] == 'A':
+                if dna[index + 2] == 'A' or 'G':
+                    # print(dna[:index])
+                    return dna[:index]
+        index = index + 3
+    return dna
+
+
+rest_of_ORF('ATGTGAA')
+rest_of_ORF("ATGAGATAGG")
 
 
 def find_all_ORFs_oneframe(dna):
@@ -79,8 +128,19 @@ def find_all_ORFs_oneframe(dna):
     >>> find_all_ORFs_oneframe("ATGCATGAATGTAGATAGATGTGCCC")
     ['ATGCATGAATGTAGA', 'ATGTGCCC']
     """
-    # TODO: implement this
-    pass
+    orfs = []
+    index = 0
+    while index < len(dna):
+        if dna[index:index + 3] == 'ATG':
+            new_ORF = rest_of_ORF(dna[index:])
+            orfs.append(new_ORF)
+            index = index + len(new_ORF)
+        else:
+            index = index + 3
+    return(orfs)
+
+
+find_all_ORFs_oneframe('ATGCATGAATGTAGATAGATGTGCCC')
 
 
 def find_all_ORFs(dna):
@@ -96,8 +156,14 @@ def find_all_ORFs(dna):
     >>> find_all_ORFs("ATGCATGAATGTAG")
     ['ATGCATGAATGTAG', 'ATGAATGTAG', 'ATG']
     """
-    # TODO: implement this
-    pass
+    first = find_all_ORFs_oneframe(dna)
+    second = find_all_ORFs_oneframe(dna[1:])
+    third = find_all_ORFs_oneframe(dna[2:])
+    all_orfs = first + second + third
+    return all_orfs
+
+
+find_all_ORFs('ATGCATGAATGTAG')
 
 
 def find_all_ORFs_both_strands(dna):
@@ -109,8 +175,14 @@ def find_all_ORFs_both_strands(dna):
     >>> find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
     ['ATGCGAATG', 'ATGCTACATTCGCAT']
     """
-    # TODO: implement this
-    pass
+
+    first_strand = find_all_ORFs(dna)
+    second_strand = find_all_ORFs(get_reverse_complement(dna))
+    all_orfs_both_strands = first_strand + second_strand
+    return all_orfs_both_strands
+
+
+find_all_ORFs_both_strands('ATGCGAATGTAGCATCAAA')
 
 
 def longest_ORF(dna):
