@@ -9,7 +9,6 @@ MiniProject 1: GeneFinder
 import random
 from amino_acids import aa, codons, aa_table   # you may find these useful
 from load import load_seq
-from load import load_seq
 
 
 def shuffle_string(s):
@@ -95,8 +94,10 @@ def rest_of_ORF(dna):
     >>> rest_of_ORF("ATGAGATAGG")
     'ATGAGA'
     """
+    r = len(dna) % 3
+    new_length_dna = len(dna) - r
     index = 3  # where the index will start looking at 3 for frame stop codons
-    while index < len(dna):
+    while index < new_length_dna:
         if dna[index] == 'T':
             if dna[index + 1] == 'G':
                 if dna[index + 2] == 'A':
@@ -109,12 +110,11 @@ def rest_of_ORF(dna):
 
 
 # rest_of_ORF('ATGTGAA')
-rest_of_ORF("ATGAGATAGG")
-
+# rest_of_ORF("ATGAGATAGG")
     # i = 3  # where the index will start looking at 3 for frame stop codons
     # while i < len(dna):
-    #    if dna[i:i+3] == 'TGA' or dna[i:i+3] == 'TAA' or dna[i:i+3] == 'TAG':
-    #        return dna[:i]
+        # if dna[i:i+3] == 'TGA' or dna[i:i+3] == 'TAA' or dna[i:i+3] == 'TAG':
+            # return dna[:i]
     # return dna
 
 
@@ -263,8 +263,9 @@ def gene_finder(dna):
     list_amino_acids = []
     threshold = longest_ORF_noncoding(dna, 1500)
     open_reading_frames = find_all_ORFs_both_strands(dna)
+    # print(open_reading_frames)
     for i in open_reading_frames:
-        if len(i) > threshold:
+        if len(i) >= threshold:
             protein = coding_strand_to_AA(i)
             list_amino_acids.append(protein)
     return list_amino_acids
